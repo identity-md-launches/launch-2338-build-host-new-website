@@ -44,3 +44,4 @@
 html[data-theme-changing] *,html[data-theme-changing] *::before,html[data-theme-changing] *::after{transition:none!important}
 
 .book-label-col{width:43%}
+#transaction-description{overflow-wrap:anywhere}

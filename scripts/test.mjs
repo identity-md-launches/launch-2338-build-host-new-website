@@ -115,13 +115,63 @@ async function injectWallet(page,state){
 }
 async function ready(page){await page.waitForFunction(()=>document.getElementById('read-status').textContent.startsWith('Read at block')&&!document.getElementById('refresh').disabled);}
 async function confirm(page,buttonId){await page.locator(buttonId).click();const label=await page.locator('#transaction-title').innerText();await page.locator('#transaction-confirm').click();await page.waitForFunction(label=>document.getElementById('transaction-message').textContent.startsWith(label+' confirmed'),label);}
+async function validateRevision(browser,engine){
+ for(const width of [320,390]){
+  const context=await browser.newContext({viewport:{width,height:700}});
+  try{
+   const page=await context.newPage(),state=makeState();await installRoutes(page,state);await injectWallet(page,state);
+   await page.goto(url);await ready(page);await page.evaluate(()=>document.fonts.ready);
+   await page.locator('#connect').click();await page.getByRole('button',{name:'PERK Test Wallet',exact:true}).click();
+   await page.waitForFunction(()=>!document.getElementById('wallet-dialog').open);
+   await page.locator('#connect').click();await page.locator('#switch').click();
+   await page.waitForFunction(()=>!document.getElementById('connection-dialog').open);
+   await page.locator('#amount').fill('2');await page.waitForFunction(()=>!document.getElementById('approve').disabled);
+   for(const [action,address] of [['approve',HOOK],['burn',dead]]){
+    await page.locator('#'+action).click();
+    assert.ok((await page.locator('#transaction-description').innerText()).includes(address));
+    const geometry=await page.locator('#transaction-dialog').evaluate((d,address)=>{
+     const p=document.getElementById('transaction-description'),text=p.firstChild,range=new Range();
+     const offset=text.textContent.indexOf(address);range.setStart(text,offset);range.setEnd(text,offset+address.length);
+     const bounds=p.getBoundingClientRect();
+     return {client:d.clientWidth,scroll:d.scrollWidth,descriptionClient:p.clientWidth,descriptionScroll:p.scrollWidth,
+      addressInside:[...range.getClientRects()].every(r=>r.left>=bounds.left-1&&r.right<=bounds.right+1)};
+    },address);
+    assert.equal(geometry.scroll,geometry.client,`${engine} ${width}px ${action}: dialog overflow`);
+    assert.equal(geometry.descriptionScroll,geometry.descriptionClient);
+    assert.ok(geometry.addressInside,`${engine} ${width}px ${action}: recipient outside description`);
+    await page.screenshot({path:`test/scratch/interaction/${engine}-${width}-${action}-review.png`});
+    await page.getByRole('button',{name:'Close transaction review',exact:true}).click();
+   }
+   assert.equal(state.sends.length,0,'Opening a review must not send a transaction');
+  }finally{await context.close();}
+ }
+ pass(`${engine}: full approval/burn recipient addresses fit at 320/390px before any signature`);
+ const context=await browser.newContext({viewport:{width:390,height:844}});
+ try{
+  const page=await context.newPage();await installRoutes(page,makeState());
+  for(let attempt=0;attempt<2;attempt++){
+   if(attempt)await page.reload();else await page.goto(url);
+   await ready(page);await page.locator('#connect').click();await page.getByRole('button',{name:'Browser wallet',exact:true}).click();
+   await page.waitForFunction(()=>document.getElementById('wallet-error').textContent.length>0);
+   assert.equal(await page.locator('#wallet-error').innerText(),'No browser wallet detected. Install or enable a wallet extension, then reload, or choose Coinbase Wallet.');
+   assert.ok(await page.getByRole('button',{name:'Coinbase Wallet',exact:true}).isEnabled());
+   assert.ok(await page.locator('#wallet-dialog').evaluate(d=>d.scrollWidth===d.clientWidth));
+   await page.screenshot({path:`test/scratch/interaction/${engine}-missing-wallet-${attempt+1}.png`});
+   await page.getByRole('button',{name:'Close wallet picker',exact:true}).click();
+  }
+ }finally{await context.close();}
+ pass(`${engine}: missing browser wallet explains extension recovery and the available Coinbase option after reload`);
+}
 let browser;
 try{
  browser=await chromium.launch({headless:true});
+ await validateRevision(browser,'Chromium');
  const context=await browser.newContext({viewport:{width:390,height:844}});
  const page=await context.newPage();const state=makeState();await installRoutes(page,state);await injectWallet(page,state);
  const errors=[],missing=[];page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.url().startsWith(url)&&r.status()>=400)missing.push(r.url());});
  await page.goto(url);await ready(page);await page.evaluate(()=>document.fonts.ready);
+ assert.equal(await page.getByRole('link',{name:'Launch 1660',exact:true}).getAttribute('href'),'https://explorer.imd.fun/token/'+PERK.toLowerCase());
+ pass('Launch 1660 footer link points to the explorer token record');
  await page.waitForFunction(()=>document.getElementById('oracle-answer').textContent.includes('1.2345 IMD'));
  assert.match(await page.locator('.mobile-valuation').innerText(),/2.5×/);
  assert.ok((await page.locator('#tender-button').boundingBox()).y+(await page.locator('#tender-button').boundingBox()).height<=844);
@@ -198,6 +248,6 @@ try{
  const recovery=await browser.newContext({viewport:{width:390,height:844}});const offlinePage=await recovery.newPage();const offlineState=makeState();offlineState.fail=true;await installRoutes(offlinePage,offlineState);await offlinePage.goto(url);await offlinePage.waitForFunction(()=>document.getElementById('read-status').textContent.includes('unavailable'));assert.equal(await offlinePage.locator('.mobile-valuation strong').innerText(),'Unavailable');assert.match(await offlinePage.locator('#ask-cost').innerText(),/unavailable/);await offlinePage.locator('#amount').fill('2');await offlinePage.waitForFunction(()=>document.getElementById('quote').textContent==='Refresh figures first');offlineState.fail=false;await offlinePage.locator('#refresh').click();await ready(offlinePage);await offlinePage.waitForFunction(()=>document.getElementById('quote').textContent==='0.2 IMD');await recovery.close();pass('Initial RPC outage never fabricates zero; amount input explains missing reads and recovers');
  let safari;
  try{safari=await webkit.launch({headless:true});}catch{results.push({name:'WebKit rendered interaction validation',status:'not performed',limitation:'WebKit could not launch in this run.'});console.log('LIMITATION WebKit could not launch in this run.');}
- if(safari){const ctx=await safari.newContext({viewport:{width:390,height:844}});const p=await ctx.newPage();const s=makeState();await installRoutes(p,s);await p.goto(url);await ready(p);await p.locator('#amount').fill('2');await p.waitForFunction(()=>document.getElementById('quote').textContent==='0.2 IMD');await p.locator('#connect').click();await p.locator('#wallet-dialog').waitFor({state:'visible'});await p.keyboard.press('Escape');assert.ok(await p.locator('#wallet-dialog').isHidden());assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await safari.close();pass('WebKit 390px quote, wallet picker, Escape and reflow');}
+ if(safari){try{await validateRevision(safari,'WebKit');const ctx=await safari.newContext({viewport:{width:390,height:844}});const p=await ctx.newPage();const s=makeState();await installRoutes(p,s);await p.goto(url);await ready(p);await p.locator('#amount').fill('2');await p.waitForFunction(()=>document.getElementById('quote').textContent==='0.2 IMD');await p.locator('#connect').click();await p.locator('#wallet-dialog').waitFor({state:'visible'});await p.keyboard.press('Escape');assert.ok(await p.locator('#wallet-dialog').isHidden());assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));pass('WebKit 390px quote, wallet picker, Escape and reflow');}finally{await safari.close();}}
 }catch(e){results.push({name:'Interaction validation',status:'failed',error:e.message});console.error(e);process.exitCode=1;}
 finally{await browser?.close();await new Promise(r=>server.close(r));await writeFile('test/scratch/interaction/results.json',JSON.stringify(results,null,2));console.log(JSON.stringify({passed:results.filter(r=>r.status==='passed').length,failed:results.filter(r=>r.status==='failed').length,limitations:results.filter(r=>r.status==='not performed').length}));}

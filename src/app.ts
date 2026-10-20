@@ -16,7 +16,8 @@ let proposal:Proposal|null=null;
 const names:Record<Action,string>={approve:'Approve PERK',tender:'Tender PERK',redeem:'Redeem pending fees',burn:'Burn due IMD',ask:'Ask for weekly report'};
 function short(address:string):string{return `${address.slice(0,6)}…${address.slice(-4)}`;}
 function humanError(error:unknown):string{
- const e=error as {shortMessage?:string;message?:string;code?:number;cause?:{code?:number}};
+ const e=error as {name?:string;shortMessage?:string;message?:string;code?:number;cause?:{code?:number}};
+ if(e.name==='ProviderNotFoundError')return 'No browser wallet detected. Install or enable a wallet extension, then reload, or choose Coinbase Wallet.';
  if(e.code===4001 || e.cause?.code===4001 || /reject|denied/i.test(e.shortMessage||e.message||''))return 'Request declined. Nothing was submitted. You can try again.';
  if(/ZeroPayout/i.test(e.shortMessage||e.message||''))return 'This amount currently pays no IMD. Refresh the figures and choose another amount.';
  if(/AskTooSoon/i.test(e.shortMessage||e.message||''))return 'A weekly report was requested recently. Refresh the figures for the next eligible time.';
