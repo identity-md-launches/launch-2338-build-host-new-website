@@ -1,0 +1,24 @@
+{
+  "name": "perkshire",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "node scripts/typecheck.mjs",
+    "preview": "node scripts/preview.mjs",
+    "test": "node scripts/test.mjs"
+  },
+  "dependencies": {
+    "@wagmi/core": "3.6.6",
+    "@wagmi/connectors": "8.2.1",
+    "viem": "2.57.7",
+    "@coinbase/wallet-sdk": "4.4.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "typescript": "7.0.2",
+    "@playwright/test": "1.64.1",
+    "@axe-core/playwright": "4.14.0"
+  }
+}

@@ -1,0 +1,10 @@
+import {createRequire} from 'node:module';
+import {resolve} from 'node:path';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {spawnSync} from 'node:child_process';
+const deps=process.argv.includes('--deps')?resolve(process.argv[process.argv.indexOf('--deps')+1]):resolve('.');
+const require=createRequire(resolve(deps,'package.json'));
+await mkdir('test/scratch',{recursive:true});
+await writeFile('test/scratch/tsconfig.check.json',JSON.stringify({extends:'../../tsconfig.json',compilerOptions:{paths:{'*':[resolve(deps,'node_modules/*')]}}}));
+const result=spawnSync(process.execPath,[resolve(deps,'node_modules/typescript/bin/tsc'),'--noEmit','--project','test/scratch/tsconfig.check.json'],{stdio:'inherit'});
+if(result.status!==0)process.exitCode=result.status??1;else console.log('Typecheck passed.');

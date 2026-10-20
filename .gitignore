@@ -1,0 +1,8 @@
+# Explicit path budgets: PACKAGING.md. dist/ is a required delivery.
+**/node_modules/
+**/.npm/
+**/.cache/
+**/.pnpm-store/
+**/.yarn/cache/
+test/scratch/
+.playwright-mcp/

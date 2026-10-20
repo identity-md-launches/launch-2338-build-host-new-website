@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en" data-theme="slate">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Perkshire IMDway · PERK on Robinhood Chain</title>
+  <meta name="description" content="A value-investing parody with an onchain insurance float. Read the books, tender PERK for IMD, and request the Chairman’s weekly report.">
+  <meta property="og:title" content="Perkshire IMDway · The books are open">
+  <meta property="og:description" content="The PERK float, book value and weekly report on Robinhood Chain. A value-investing parody. No owner, no admin.">
+  <meta property="og:image" content="./assets/investor-pepe.png">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#1C2128">
+  <link rel="icon" type="image/png" href="./assets/investor-pepe.png">
+  <link rel="preload" href="./assets/plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="./assets/site.css">
+  <script type="module" src="./assets/app.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="page">
+  <header class="header">
+    <a class="brand" href="#main" aria-label="perkshire home"><img src="./assets/investor-pepe.png" width="28" height="28" alt=""><span>perkshire</span></a>
+    <div class="utilities">
+      <button id="theme" class="theme" type="button" aria-label="Change theme. Current theme: Slate" title="Change theme"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="4" y="4" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 4H4v16h8z" fill="currentColor"/></svg></button>
+      <button id="connect" class="accent" type="button">Connect wallet</button>
+    </div>
+  </header>
+  <p class="banner">“We spend our capital on economic moat liquidity, not web designers or lambos.”</p>
+  <main id="main">
+    <div class="intro">
+      <div><h1>Perkshire IMDway</h1><p>A value-investing parody token.<br>Robinhood Chain · PERK · Launch 1660</p></div>
+      <img class="portrait" src="./assets/investor-pepe.png" width="104" height="104" alt="The fictional Chairman, an investor Pepe with glasses">
+    </div>
+    <nav class="section-nav" aria-label="On this page"><a href="#books">The books</a><a href="#report">Weekly report</a><a href="#letter">Chairman’s letter</a></nav>
+    <div class="mobile-valuation"><span>Price-to-book</span><strong data-value="pb">Loading</strong><span data-value="pb-note" class="dim">Pool price ÷ book value</span></div>
+    <div class="data-bar"><p id="read-status" role="status">Reading Robinhood Chain…</p><button id="refresh" type="button">Refresh figures</button></div>
+    <div class="dashboard">
+      <aside class="actions" aria-label="PERK actions">
+        <section class="panel" id="tender" aria-labelledby="tender-title">
+          <div class="section-head"><h2 id="tender-title">Tender PERK</h2><span class="step">At book value</span></div>
+          <p class="tender-description">Burn PERK. Receive IMD from the float.</p>
+          <form id="tender-form" novalidate>
+            <label for="amount">Amount of PERK</label>
+            <div class="input-row"><input id="amount" name="amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00" aria-describedby="amount-help amount-error"><button id="max" type="button" disabled>Max</button></div>
+            <p id="amount-help" class="small dim">Enter an amount for a live IMD quote.</p>
+            <p id="amount-error" class="error" role="status"></p>
+            <div class="quote"><span>IMD you would receive</span><strong id="quote">Enter amount</strong></div>
+            <p id="balance" class="small dim">Connect above to approve and tender.</p>
+            <button id="approve" class="wide" type="button" disabled>Approve PERK · gas only</button>
+            <button id="tender-button" class="accent wide" type="submit" disabled>Tender PERK · burns tokens + gas</button>
+            <p class="small dim">Tendering is permanent. Quotes can change before inclusion.</p>
+          </form>
+        </section>
+        <section class="margin-note"><h2>Capital allocation, automated.</h2><p>A share of every trade funds the float. Half of the hook fee retires IMD. The books are public.</p><a href="#letter">Read the Chairman’s letter ↓</a><p class="small dim">No owner. No admin. No promised return.</p></section>
+      </aside>
+      <nav class="mobile-nav" aria-label="More from perkshire"><a href="#books">The books</a><a href="#report">Weekly report</a><a href="#letter">Chairman’s letter</a></nav>
+      <section class="books" id="books" aria-labelledby="books-title">
+        <div class="section-head"><h2 id="books-title">The books</h2><span class="label">Denominated in IMD</span></div>
+        <table>
+          <caption class="sr-only">PERK’s live valuation, insurance float and management. Token amounts are labelled PERK; monetary values are IMD.</caption>
+          <colgroup><col class="book-label-col"><col></colgroup>
+          <tbody>
+            <tr class="pb-row"><th scope="row">Price-to-book<span class="sub">Pool price ÷ book value</span></th><td><strong class="pb" data-value="pb">Loading</strong><span class="sub" data-value="pb-note">Reading pool</span></td></tr>
+            <tr><th scope="row">Insurance float<span class="sub">Available for tenders</span></th><td><span data-value="floatBalance">Loading</span> <span class="unit">IMD</span></td></tr>
+            <tr><th scope="row">Book value<span class="sub">Per PERK</span></th><td><span data-value="bookValuePerPerk">Loading</span> <span class="unit">IMD</span></td></tr>
+            <tr><th scope="row">Market price<span class="sub">Pool spot, per PERK</span></th><td><span data-value="marketPrice">Loading</span> <span class="unit">IMD</span></td></tr>
+            <tr><th scope="row">Pending float<span class="sub">Claims, including burn share</span></th><td><span data-value="pendingFloat">Loading</span> <span class="unit">IMD</span><button class="table-action" id="redeem" type="button" disabled>Redeem pending · gas only</button></td></tr>
+            <tr><th scope="row">Float collected<span class="sub">All time, including deferred</span></th><td><span data-value="totalFloat">Loading</span> <span class="unit">IMD</span></td></tr>
+            <tr><th scope="row">IMD burned<span class="sub">The buyback, all time</span></th><td><span data-value="totalBurned">Loading</span> <span class="unit">IMD</span></td></tr>
+            <tr><th scope="row">Due to the burn<span class="sub">Payable from held IMD</span></th><td><span data-value="burnDue">Loading</span> <span class="unit">IMD</span><button class="table-action" id="burn" type="button" disabled>Burn due IMD · gas only</button></td></tr>
+            <tr><th scope="row">PERK tendered<span class="sub">Permanently out of circulation</span></th><td><span data-value="totalTendered">Loading</span> <span class="unit">PERK</span></td></tr>
+            <tr><th scope="row">Management<span class="sub">Entirely fictional</span></th><td>Warren Peppett<span class="sub">Chairman &amp; Chief Allocation Agent</span><span class="management">Charlie LLM</span><span class="sub">Vice Chairman, eternally skeptical</span></td></tr>
+            <tr><th scope="row">Headquarters</th><td>2000 Swarm Node Plaza<br>Suite 2026<br>Robinhood Chain</td></tr>
+            <tr><th scope="row">The only real PERK</th><td><a class="address" href="https://robinhoodchain.blockscout.com/address/0x2b2ED02698a82230F11D6285f3b147e3Fd6df83A">0x2b2ED02698a82230F11D6285f3b147e3Fd6df83A</a></td></tr>
+            <tr><th scope="row">Hook &amp; vault</th><td><a class="address" href="https://robinhoodchain.blockscout.com/address/0x708baBc63fd376D359EFF785d58Ae462B5Bea0cc">0x708baBc63fd376D359EFF785d58Ae462B5Bea0cc</a></td></tr>
+            <tr><th scope="row">Paired asset</th><td><a class="address" href="https://robinhoodchain.blockscout.com/address/0x5f7bb59365ce557c26dbcaa4ee9d39a4b95b7127">IMD · 0x5f7bb59365ce557c26dbcaa4ee9d39a4b95b7127</a></td></tr>
+            <tr><th scope="row">Trading desk</th><td><a id="trade" href="https://app.uniswap.org/swap?chain=robinhood&amp;inputCurrency=0x5f7bb59365ce557c26dbcaa4ee9d39a4b95b7127&amp;outputCurrency=0x2b2ED02698a82230F11D6285f3b147e3Fd6df83A">Trade PERK on Uniswap ↗</a><span class="sub">Trading fees and gas apply.</span><a id="pool-link" class="sub" hidden>View the bound pool</a></td></tr>
+          </tbody>
+        </table>
+        <details class="precision"><summary>Full-precision figures</summary><dl id="exact-figures"><div><dt>Chain figures</dt><dd>Loading</dd></div></dl></details>
+        <p class="small dim">Spot price is a pool ratio, not an executable quote. Price-to-book rounds down to two decimals. Failed reads never become zero.</p>
+      </section>
+
+    </div>
+    <section id="report" class="report" aria-labelledby="report-title">
+      <div class="section-head"><h2 id="report-title">Chairman’s Weekly Report</h2><span class="label">One question. Every seven days.</span></div>
+      <div class="report-grid">
+        <div>
+          <p>How much IMD was sent to the dead address on Robinhood Chain during the report’s week?</p>
+          <dl class="report-stats"><div><dt>Last asked</dt><dd data-value="lastAsk">Loading</dd></div><div><dt>Reports requested</dt><dd data-value="totalAsked">Loading</dd></div></dl>
+          <p id="ask-cost" class="small dim">Reading the report cost and caller reward from the hook…</p>
+          <button id="ask" type="button" disabled>Ask · float pays 0.6 IMD + you pay gas</button>
+          <p id="ask-status" class="small dim">Checking timing and float…</p>
+        </div>
+        <div class="answer"><h3>Latest oracle answer</h3><div id="oracle-answer" role="status"><p>Reading oracle requests…</p></div><button id="oracle-refresh" type="button">Refresh report</button><a class="small" href="https://api.imd.fun/oracle/requests">View oracle records ↗</a></div>
+      </div>
+    </section>
+    <article id="letter" class="letter" aria-labelledby="letter-title">
+      <div class="section-head"><h2 id="letter-title">Chairman’s Letter</h2><span class="label">To our fellow tokenholders</span></div>
+      <div class="letter-body">
+        <p>Dear fellow capital allocators,</p>
+        <p>Welcome to Perkshire IMDway. We have replaced a conglomerate with a token, a vault and a very small management team that does not exist. PERK is a value-investing parody, not equity in a business.</p>
+        <h3>The float and the buyback</h3>
+        <p>Every trade in our Uniswap v4 pool pays the hook 1% of the IMD moved. Half is sent to the dead address as IMD: our “buyback.” The other half stays in the hook as the insurance float. We do not use the float to buy PERK. Pending fees are claims on the pool manager, not spendable backing, until redeemed. Anyone can redeem those claims or retry an outstanding burn.</p>
+        <h3>Book value is a tender value</h3>
+        <p>Book value is the available IMD float divided by circulating PERK. A holder can approve PERK to the hook and tender it. The PERK goes permanently to the dead address; the holder receives its share of the float in IMD, rounded down. The live quote comes from the contract. There is no owner or admin, and no promise that market price will match book value.</p>
+        <h3>Our weekly research budget</h3>
+        <p>Once seven days have passed since the last question, anyone can ask for the Chairman’s weekly report if the float has at least 0.6 IMD. The question counts IMD sent to the dead address on Robinhood Chain over the oracle’s seven-day window, across the whole chain, not just this hook. Each question spends 0.6 IMD from the float: 0.5 IMD buys the oracle answer and 0.1 IMD goes to the caller. That expense lowers book value. Reports appear when the oracle finishes; a request is not an answer.</p>
+        <h3>Read the risks before allocating</h3>
+        <ul>
+          <li>Book value starts at zero and stays far below market price at realistic trading volume. A growing float is not a guaranteed investment return.</li>
+          <li>Once the float has grown, any floor holds only within trading costs: about 2.25% per trade, plus gas, price impact and slippage.</li>
+          <li>Every weekly question spends 0.6 IMD of the float. Tendering also reduces the float and circulating PERK.</li>
+          <li>The float is denominated in IMD. IMD’s market price changes its dollar value.</li>
+          <li>IMD on Robinhood Chain has an owner with a transfer switch and a blocklist. Those controls could defer fees or stop payouts, even though this hook has no admin.</li>
+          <li>The hook fixes the oracle purchase at 0.5 IMD. If IMD changes that price, the weekly question stops working.</li>
+          <li>The tender contract has no minimum-payout parameter. Its quote may change before your transaction is included. Token burns cannot be reversed.</li>
+        </ul>
+        <p>Yours in patient, entirely fictional allocation,</p>
+        <p class="signature">Warren Peppett<br><span class="dim">Chairman &amp; Chief Allocation Agent</span></p>
+        <p class="small dim">Charlie LLM, Vice Chairman: “I remain unconvinced.”</p>
+      </div>
+    </article>
+  </main>
+  <footer>
+    <p>Parody. Not affiliated with Berkshire Hathaway, Warren Buffett or Charlie Munger. PERK is not equity.</p>
+    <p>The creator holds 1% of the PERK supply from launch and receives the pool’s 1% creator fee.</p>
+    <p>Built and audited by the IMD swarm · <a href="https://explorer.imd.fun/launch/80a241f0-bb62-46ae-9712-2512f5e9f683">Launch 1660</a> · <a href="https://github.com/identity-md-launches/launch-1660-perkshire-imdway/tree/4329d97b05699e0d796c86ba4310d4df83e4381e">Contract code</a></p>
+    <p>Styled with VIMD Family v3 (<a href="https://github.com/blockmerchantlabs/vimd-family">github.com/blockmerchantlabs/vimd-family</a>).</p>
+  </footer>
+</div>
+<dialog id="wallet-dialog" aria-labelledby="wallet-title"><div class="dialog-head"><h2 id="wallet-title">Connect a wallet</h2><button class="close" type="button" data-close="wallet-dialog" aria-label="Close wallet picker">×</button></div><p class="dim">View your address. No payment or signature.</p><div id="wallet-list"></div><p id="wallet-error" class="error" role="status"></p></dialog>
+<dialog id="transaction-dialog" aria-labelledby="transaction-title"><div class="dialog-head"><h2 id="transaction-title">Review transaction</h2><button class="close" type="button" data-close="transaction-dialog" aria-label="Close transaction review">×</button></div><p id="transaction-description"></p><p class="small dim">Robinhood Chain (4663). Your wallet shows the ETH gas estimate before you sign.</p><p id="transaction-error" class="error" role="status"></p><button id="transaction-confirm" class="accent wide" type="button">Continue in wallet</button></dialog>
+<dialog id="connection-dialog" aria-labelledby="connection-title"><div class="dialog-head"><h2 id="connection-title">Wallet connected</h2><button class="close" type="button" data-close="connection-dialog" aria-label="Close wallet details">×</button></div><p id="wallet-address" class="address"></p><p id="network-description"></p><button id="switch" class="wide" type="button">Switch to Robinhood Chain · free</button><p class="small dim">Adds the network if needed. No transaction or token approval.</p><button id="disconnect" class="wide" type="button">Disconnect wallet · free</button><p id="connection-error" class="error" role="status"></p></dialog>
+<div id="transaction-status" class="transaction-status" role="status" hidden><div><p id="transaction-message"></p><a id="transaction-link" hidden>View transaction ↗</a></div><button id="dismiss-status" type="button" aria-label="Dismiss transaction status">×</button></div>
+<noscript><p class="noscript">Enable JavaScript to read current figures or use wallet actions. The letter and contract links remain available.</p></noscript>
+</body>
+</html>

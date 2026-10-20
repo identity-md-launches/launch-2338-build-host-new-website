@@ -1,0 +1,16 @@
+/* VIMD Family visual identity, tokens. Default theme: slate. Others: stone, white, black.
+   Set the theme with <html data-theme="slate|stone|white|black">. No attribute = slate. */
+:root,:root[data-theme=slate]{color-scheme:dark;
+  --paper:#1C2128;--ink:#E8E4DC;--dim:#A3A9B1;--faint:#6E7681;--mute:#4A525C;--soft:#2A313A;--hover:#242A32;
+  --accent:#D8C398;--ok:#3ECF7A;--alarm:#FF6B62;--seg-light:#3A424C}
+:root[data-theme=stone]{color-scheme:light;
+  --paper:#ECE8E1;--ink:#222831;--dim:#5A6068;--faint:#7D828A;--mute:#B9B4AB;--soft:#DCD7CE;--hover:#E4DFD7;
+  --accent:#7A5F30;--ok:#13703C;--alarm:#B3261E;--seg-light:#CFC9BF}
+:root[data-theme=white]{color-scheme:light;
+  --paper:#FFFFFF;--ink:#000000;--dim:#555555;--faint:#8C8C8C;--mute:#BBBBBB;--soft:#E6E6E6;--hover:#F4F4F4;
+  --accent:#8A6D3B;--ok:#13793F;--alarm:#B3261E;--seg-light:#CFCFCF}
+:root[data-theme=black]{color-scheme:dark;
+  --paper:#000000;--ink:#FFFFFF;--dim:#9A9A9A;--faint:#666666;--mute:#4A4A4A;--soft:#262626;--hover:#141414;
+  --accent:#D8C398;--ok:#3ECF7A;--alarm:#FF6B62;--seg-light:#3A3A3A}
+:root{--rule:1.5px solid var(--ink);--mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --gutter:clamp(16px,4vw,34px);--label:11px;--body:13px;--h2:18px;--h1:28px;--track:0.06em;--pill-h:40px;--radius:0}
